@@ -1,0 +1,17 @@
+##Deplopy service first and then
+apiVersion: v1
+kind: Service
+metadata: 
+  name: redis-master
+  labels: ## map of string keys and values that can be used to organize and categorize objects 
+    app: redis-app
+    role: master-app
+    tier: backend-app
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector: ##Should match the lables for pods in deployments
+    app: redis
+    role: master
+    tier: backend

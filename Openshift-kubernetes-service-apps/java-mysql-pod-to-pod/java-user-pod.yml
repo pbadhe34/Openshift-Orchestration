@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: java-user-service
+spec:   
+  containers:
+    - name: user-service-container
+      image: pbadhe34/my-apps:user-app
+      ports:
+        - containerPort: 8090
+##Doesnot get linked to  pod  named as mysql. Need to provide reference to the java pod or env variable by which it ##can identifty the mysql pod
+##DNS not availble to pods to resilve the mysql pod host to IP ; The DNS aviolable to services
+     

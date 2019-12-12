@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: py-app-pod
+spec:   
+  containers:
+    - name: py-app
+      image: pbadhe34/my-apps:app1
+      ports:
+        - containerPort: 8090
+      env:
+        - name: redis #Cannot connect to redis pod named as "redis"- DNS not availoable to resoiolve mysql pod ip
+               ##DNS avaiulabvle to service hosts 
+          value: "redis"
+    

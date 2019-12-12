@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+spec:  
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-pod
+  template:
+    metadata:
+      labels:
+        app: mysql-pod
+    spec:
+      volumes:
+       - name: persistent-storage
+         persistentVolumeClaim:
+          claimName: app-pv-claim
+      containers:
+      - name: mysql-container
+        image: mysql:5.6
+        env:
+         - name: MYSQL_ROOT_PASSWORD
+           value: "MyRootPass123" 
+         - name: MYSQL_DATABASE
+           value: userservice
+        ports:
+        - containerPort: 3306
+          name: mysql-port
+        volumeMounts:
+          - name: persistent-storage
+            mountPath: /var/lib/mysql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql  ##The name of mysql-service host that java service looks for
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: mysql-pod
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-app-pod
+  template:
+    metadata:
+      labels:
+        app: user-app-pod
+    spec:       
+      containers:
+      - name: user-app-container
+        image: pbadhe34/my-apps:user-app
+        ports:
+        - containerPort: 8090
+        ##Here It  uses the DNS service provided by cluster to find trhe mysql service host
+        env:
+          - name: mysql #Name of mysql service host: NOT used here
+            value: mysql-host   ##Not used in java service app    
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-app-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8090
+  selector:
+    app: user-app-pod
